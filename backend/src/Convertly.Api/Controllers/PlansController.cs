@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Convertly.Api.Controllers;
 
 [ApiController]
-[Route("api/plans")]
+[Route("/plans")]
 public sealed class PlansController(IPlanService planService) : ControllerBase
 {
     [HttpGet]

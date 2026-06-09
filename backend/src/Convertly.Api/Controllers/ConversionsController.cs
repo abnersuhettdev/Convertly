@@ -8,7 +8,7 @@ namespace Convertly.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/conversions")]
+[Route("/conversions")]
 public sealed class ConversionsController(IConversionService conversionService) : ControllerBase
 {
     [HttpGet]

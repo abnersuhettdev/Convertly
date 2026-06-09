@@ -8,7 +8,7 @@ namespace Convertly.Api.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/subscription")]
+[Route("/subscription")]
 public sealed class SubscriptionController(ISubscriptionService subscriptionService) : ControllerBase
 {
     [HttpGet("me")]

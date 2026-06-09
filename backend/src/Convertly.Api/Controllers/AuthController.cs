@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Convertly.Api.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("/auth")]
 public sealed class AuthController(IAuthService authService) : ControllerBase
 {
     [HttpPost("register")]

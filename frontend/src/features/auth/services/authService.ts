@@ -10,7 +10,7 @@ import type {
 
 export async function login(request: LoginRequest) {
   const response = await api.post<ApiResponse<AuthResponse>>(
-    '/api/auth/login',
+    '/auth/login',
     request,
   );
   return unwrapResponse(response.data);
@@ -18,14 +18,14 @@ export async function login(request: LoginRequest) {
 
 export async function register(request: RegisterRequest) {
   const response = await api.post<ApiResponse<AuthResponse>>(
-    '/api/auth/register',
+    '/auth/register',
     request,
   );
   return unwrapResponse(response.data);
 }
 
 export async function getMe() {
-  const response = await api.get<ApiResponse<User>>('/api/auth/me');
+  const response = await api.get<ApiResponse<User>>('/auth/me');
   return unwrapResponse(response.data);
 }
 

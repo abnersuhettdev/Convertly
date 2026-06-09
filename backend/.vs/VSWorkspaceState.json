@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\Convertly.Api",
+    "\\src\\Convertly.Infrastructure",
+    "\\src\\Convertly.Infrastructure\\Storage",
+    "\\src\\Convertly.Infrastructure\\Time"
+  ],
+  "SelectedNode": "\\Convertly.sln",
+  "PreviewInSolutionExplorer": false
+}

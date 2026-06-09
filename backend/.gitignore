@@ -1,0 +1,7 @@
+bin/
+obj/
+.dotnet-home/
+.nuget-packages/
+.appdata/
+.localappdata/
+.tools/

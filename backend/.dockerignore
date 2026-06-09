@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+.vscode/
+Dockerfile
+README.md
+**/.env
+**/.env.*
+**/node_modules/
+**/TestResults/
+**/coverage/
+**/*.user
+**/*.suo
+**/*.log

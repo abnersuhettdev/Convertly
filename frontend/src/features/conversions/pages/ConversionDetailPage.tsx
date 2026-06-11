@@ -1,6 +1,8 @@
 import { Download, Loader2, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import { PageLoadingState } from "../../../components/ui/PageLoadingState";
 import { PageShell } from "../../../components/ui/PageShell";
 import { formatDateTime } from "../../../lib/format";
 import { ConversionStatusBadge } from "../components/ConversionStatusBadge";
@@ -9,6 +11,7 @@ import { downloadConversion, getApiErrorMessage } from "../services/conversionSe
 
 export function ConversionDetailPage() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const conversionQuery = useConversionDetail(id);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -33,64 +36,64 @@ export function ConversionDetailPage() {
       link.remove();
       URL.revokeObjectURL(url);
     } catch (error) {
-      setDownloadError(getApiErrorMessage(error));
+      setDownloadError(getApiErrorMessage(error, t));
     } finally {
       setIsDownloading(false);
     }
   }
 
   return (
-    <PageShell description="Track conversion status and download the PDF when it is ready." title="Conversion detail">
+    <PageShell description={t("conversions.detail.description")} title={t("conversions.detail.title")}>
       {conversionQuery.isLoading ? (
-        <p className="text-sm text-slate-600">Loading conversion...</p>
+        <PageLoadingState label={t("conversions.detail.loading")} />
       ) : conversionQuery.isError ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {getApiErrorMessage(conversionQuery.error)}
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm" role="alert">
+          {getApiErrorMessage(conversionQuery.error, t)}
         </p>
       ) : conversion ? (
-        <div className="space-y-6">
+        <div className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xl shadow-slate-900/5">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div>
               <h2 className="text-xl font-semibold text-slate-950">{conversion.sourceFileName}</h2>
               <p className="mt-2 text-sm uppercase text-slate-500">
-                {conversion.sourceFormat} to {conversion.targetFormat}
+                {t("common.formatPair", { source: conversion.sourceFormat, target: conversion.targetFormat })}
               </p>
             </div>
             <ConversionStatusBadge status={conversion.status} />
           </div>
 
           {conversion.status === "Pending" || conversion.status === "Processing" ? (
-            <div className="inline-flex items-center gap-2 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+            <div className="inline-flex items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800" role="status">
               <RefreshCw aria-hidden="true" className="h-4 w-4 animate-spin" />
-              Conversion is running. This page refreshes automatically.
+              {t("conversions.detail.running")}
             </div>
           ) : null}
 
           {conversion.status === "Failed" ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {conversion.errorMessage ?? "Conversion failed. Try again with another DOCX file."}
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+              {conversion.errorMessage ?? t("conversions.detail.failedFallback")}
             </p>
           ) : null}
 
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
-            <Info label="Created" value={formatDateTime(conversion.createdAt)} />
-            <Info label="Started" value={formatDateTime(conversion.startedAt)} />
-            <Info label="Completed" value={formatDateTime(conversion.completedAt)} />
-            <Info label="Expires" value={formatDateTime(conversion.expiresAt)} />
+            <Info label={t("conversions.detail.created")} value={formatDateTime(conversion.createdAt)} />
+            <Info label={t("conversions.detail.started")} value={formatDateTime(conversion.startedAt)} />
+            <Info label={t("conversions.detail.completed")} value={formatDateTime(conversion.completedAt)} />
+            <Info label={t("conversions.detail.expires")} value={formatDateTime(conversion.expiresAt)} />
           </dl>
 
           {downloadError ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{downloadError}</p>
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{downloadError}</p>
           ) : null}
 
           <button
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-emerald-600 px-5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-slate-950 px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300"
             disabled={!conversion.downloadAvailable || isDownloading}
             onClick={handleDownload}
             type="button"
           >
             {isDownloading ? <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Download aria-hidden="true" className="h-4 w-4" />}
-            Download PDF
+            {t("common.downloadPdf")}
           </button>
         </div>
       ) : null}
@@ -100,7 +103,7 @@ export function ConversionDetailPage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
       <dt className="font-semibold text-slate-700">{label}</dt>
       <dd className="mt-1 text-slate-600">{value}</dd>
     </div>

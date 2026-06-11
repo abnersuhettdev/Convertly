@@ -1,15 +1,21 @@
+using Convertly.Api;
 using Convertly.Infrastructure;
 using Convertly.Infrastructure.Auth;
+using Convertly.Infrastructure.Persistence;
 using Hangfire;
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 const string frontendCorsPolicy = "FrontendCors";
-
 builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services
@@ -30,8 +36,92 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
             ClockSkew = TimeSpan.Zero
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userIdValue = context.Principal?.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                    ?? context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!Guid.TryParse(userIdValue, out var userId))
+                {
+                    context.Fail("Invalid token.");
+                    return;
+                }
+
+                var dbContext = context.HttpContext.RequestServices.GetRequiredService<ConvertlyDbContext>();
+                var isActive = await dbContext.Users.AnyAsync(
+                    user => user.Id == userId && user.IsActive,
+                    context.HttpContext.RequestAborted);
+
+                if (!isActive)
+                {
+                    context.Fail("Invalid token.");
+                }
+            }
+        };
     });
 builder.Services.AddAuthorization();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = (context, cancellationToken) =>
+    {
+        var logger = context.HttpContext.RequestServices
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Convertly.RateLimiting");
+        logger.LogWarning(
+            "rate_limit_exceeded path={Path} user={UserKey}",
+            context.HttpContext.Request.Path,
+            GetRateLimitPartitionKey(context.HttpContext));
+
+        return ValueTask.CompletedTask;
+    };
+
+    options.AddPolicy(RateLimitPolicies.AuthSensitive, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetRateLimitPartitionKey(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+
+    options.AddPolicy(RateLimitPolicies.AccountSensitive, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetRateLimitPartitionKey(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(10)
+            }));
+
+    options.AddPolicy(RateLimitPolicies.ConversionCreate, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetRateLimitPartitionKey(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 20,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(10)
+            }));
+
+    options.AddPolicy(RateLimitPolicies.ConversionDownload, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            GetRateLimitPartitionKey(httpContext),
+            _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 60,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(10)
+            }));
+});
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddHangfireServer();
@@ -102,11 +192,28 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UsePathBase("/api");
 app.UseCors(frontendCorsPolicy);
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseRateLimiter();
+}
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static string GetRateLimitPartitionKey(HttpContext httpContext)
+{
+    var userId = httpContext.User.FindFirstValue("sub");
+    if (!string.IsNullOrWhiteSpace(userId))
+    {
+        return $"user:{userId}";
+    }
+
+    var remoteIp = httpContext.Connection.RemoteIpAddress?.ToString();
+    return string.IsNullOrWhiteSpace(remoteIp) ? "anonymous" : $"ip:{remoteIp}";
+}
 
 public partial class Program;

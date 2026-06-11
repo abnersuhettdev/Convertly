@@ -1,8 +1,10 @@
+using Convertly.Application.Account;
 using Convertly.Application.Auth;
 using Convertly.Application.Common;
 using Convertly.Application.Conversions;
 using Convertly.Application.Files;
 using Convertly.Application.Subscriptions;
+using Convertly.Infrastructure.Account;
 using Convertly.Infrastructure.Auth;
 using Convertly.Infrastructure.Conversions;
 using Convertly.Infrastructure.Jobs;
@@ -58,6 +60,7 @@ public static class DependencyInjection
         });
 
         services.AddHttpContextAccessor();
+        services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAuthService, AuthService>();
         services.Configure<ConversionOptions>(configuration.GetSection("Conversion"));
         services.AddScoped<IFileConverter, DocxToPdfConverter>();

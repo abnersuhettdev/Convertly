@@ -10,6 +10,7 @@ using Convertly.Domain.Entities;
 using Convertly.Domain.Enums;
 using Convertly.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Convertly.Infrastructure.Conversions;
 
@@ -19,9 +20,9 @@ public sealed class ConversionService(
     IMonthlyUsageService monthlyUsageService,
     IFileStorageService fileStorageService,
     IConversionJobQueue conversionJobQueue,
-    IDateTimeProvider dateTimeProvider) : IConversionService
+    IDateTimeProvider dateTimeProvider,
+    ILogger<ConversionService> logger) : IConversionService
 {
-    private const string DocxMimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     private const string PdfContentType = "application/pdf";
     private const int DefaultPage = 1;
     private const int DefaultPageSize = 10;
@@ -37,7 +38,8 @@ public sealed class ConversionService(
         }
 
         var userId = currentUserService.UserId.Value;
-        var validationErrors = await ValidateRequestAsync(userId, request, cancellationToken);
+        var validationResult = await ValidateRequestAsync(userId, request, cancellationToken);
+        var validationErrors = validationResult.Errors;
         if (validationErrors.Count > 0)
         {
             return ApiResponse<CreateConversionResponse>.Fail("Validation failed", validationErrors.ToArray());
@@ -69,8 +71,8 @@ public sealed class ConversionService(
                 userId,
                 conversionId.Value,
                 sourceFileId.Value,
-                request.FileName,
-                request.ContentType,
+                validationResult.SafeFileName,
+                GetStorageContentType(request.ContentType),
                 cancellationToken);
 
             await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
@@ -79,12 +81,12 @@ public sealed class ConversionService(
             {
                 Id = sourceFileId.Value,
                 UserId = userId,
-                OriginalFileName = request.FileName,
+                OriginalFileName = validationResult.SafeFileName,
                 StoredFileName = storageResult.StoredFileName,
                 StoragePath = storageResult.StoragePath,
                 BucketName = storageResult.BucketName,
                 Extension = SupportedFormats.Docx,
-                MimeType = request.ContentType,
+                MimeType = GetStorageContentType(request.ContentType),
                 SizeBytes = request.SizeBytes,
                 Kind = FileAssetKind.Original,
                 CreatedAt = now
@@ -110,13 +112,24 @@ public sealed class ConversionService(
             await transaction.CommitAsync(cancellationToken);
 
             conversionJobQueue.EnqueueConversionJob(conversionId.Value);
+            logger.LogInformation(
+                "conversion_created user_id={UserId} conversion_id={ConversionId} size_bytes={SizeBytes}",
+                userId,
+                conversionId.Value,
+                request.SizeBytes);
 
             return ApiResponse<CreateConversionResponse>.Ok(
                 new CreateConversionResponse(conversionId.Value, ConversionStatus.Pending.ToString()),
                 "Conversion job created");
         }
-        catch
+        catch (Exception exception)
         {
+            logger.LogWarning(
+                exception,
+                "conversion_create_failed user_id={UserId} conversion_id={ConversionId}",
+                userId,
+                conversionId);
+
             if (conversionId is not null && sourceFileId is not null)
             {
                 await TryRemoveCreatedDatabaseRowsAsync(conversionId.Value, sourceFileId.Value, cancellationToken);
@@ -212,6 +225,11 @@ public sealed class ConversionService(
 
         if (conversionJob is null)
         {
+            logger.LogWarning(
+                "conversion_detail_denied user_id={UserId} conversion_id={ConversionId}",
+                userId,
+                conversionId);
+
             return ApiResponse<ConversionDetailResponse>.Fail("Conversion not found", "Conversion was not found");
         }
 
@@ -239,18 +257,36 @@ public sealed class ConversionService(
 
         if (conversionJob is null)
         {
+            logger.LogWarning(
+                "download_denied_not_found user_id={UserId} conversion_id={ConversionId}",
+                userId,
+                conversionId);
+
             return ApiResponse<ConversionDownloadResponse>.Fail("Conversion not found", "Conversion was not found");
         }
 
         if (!IsDownloadAvailable(conversionJob, dateTimeProvider.UtcNow) || conversionJob.OutputFile is null)
         {
+            logger.LogWarning(
+                "download_denied_unavailable user_id={UserId} conversion_id={ConversionId} status={Status}",
+                userId,
+                conversionId,
+                conversionJob.Status);
+
             return ApiResponse<ConversionDownloadResponse>.Fail(
                 "Download unavailable",
-                "Converted file is not available for download");
+                conversionJob.ExpiresAt <= dateTimeProvider.UtcNow
+                    ? "Converted file has expired"
+                    : "Converted file is not available for download");
         }
 
         try
         {
+            logger.LogInformation(
+                "download_requested user_id={UserId} conversion_id={ConversionId}",
+                userId,
+                conversionId);
+
             var stream = await fileStorageService.GetAsync(
                 conversionJob.OutputFile.BucketName,
                 conversionJob.OutputFile.StoragePath,
@@ -263,15 +299,21 @@ public sealed class ConversionService(
                     PdfContentType),
                 "Download ready");
         }
-        catch
+        catch (Exception exception)
         {
+            logger.LogWarning(
+                exception,
+                "download_failed user_id={UserId} conversion_id={ConversionId}",
+                userId,
+                conversionId);
+
             return ApiResponse<ConversionDownloadResponse>.Fail(
                 "Download failed",
-                "Converted file was not found");
+                "Could not access this file. Check whether it is still available.");
         }
     }
 
-    private async Task<List<string>> ValidateRequestAsync(
+    private async Task<ConversionValidationResult> ValidateRequestAsync(
         Guid userId,
         CreateConversionRequest request,
         CancellationToken cancellationToken)
@@ -281,27 +323,7 @@ public sealed class ConversionService(
         if (request.File is null)
         {
             errors.Add("File is required");
-            return errors;
-        }
-
-        if (request.SizeBytes <= 0)
-        {
-            errors.Add("File must not be empty");
-        }
-
-        if (!Path.GetExtension(request.FileName).Equals(".docx", StringComparison.OrdinalIgnoreCase))
-        {
-            errors.Add("File extension is not supported");
-        }
-
-        if (!request.ContentType.Equals(DocxMimeType, StringComparison.OrdinalIgnoreCase))
-        {
-            errors.Add("File MIME type is not supported");
-        }
-
-        if (!request.TargetFormat.Equals(SupportedFormats.Pdf, StringComparison.OrdinalIgnoreCase))
-        {
-            errors.Add("Target format is not supported");
+            return new ConversionValidationResult(FileUploadValidation.GetSafeDisplayFileName(request.FileName), errors);
         }
 
         var activeSubscription = await dbContext.UserSubscriptions
@@ -315,7 +337,7 @@ public sealed class ConversionService(
         if (activeSubscription is null)
         {
             errors.Add("Active subscription was not found");
-            return errors;
+            return new ConversionValidationResult(FileUploadValidation.GetSafeDisplayFileName(request.FileName), errors);
         }
 
         if (!activeSubscription.Plan.IsActive)
@@ -324,12 +346,74 @@ public sealed class ConversionService(
         }
 
         var maxFileSizeBytes = activeSubscription.Plan.MaxFileSizeMb * 1024L * 1024L;
-        if (request.SizeBytes > maxFileSizeBytes)
+        var fileValidation = FileUploadValidation.Validate(
+            request.FileName,
+            request.ContentType,
+            request.SizeBytes,
+            request.TargetFormat,
+            maxFileSizeBytes);
+
+        foreach (var error in fileValidation.Errors)
         {
-            errors.Add("File exceeds current plan size limit");
+            errors.Add(ToUserFacingMessage(error));
+            LogFileValidationFailure(userId, error, request.SizeBytes, activeSubscription.Plan.MaxFileSizeMb);
         }
 
-        return errors;
+        return new ConversionValidationResult(fileValidation.SafeFileName, errors);
+    }
+
+    private void LogFileValidationFailure(
+        Guid userId,
+        FileUploadValidationError error,
+        long sizeBytes,
+        int planMaxFileSizeMb)
+    {
+        switch (error)
+        {
+            case FileUploadValidationError.BlockedExtension:
+                logger.LogWarning("upload_rejected_blocked_extension user_id={UserId}", userId);
+                break;
+            case FileUploadValidationError.EmptyFile:
+                logger.LogWarning("upload_rejected_empty_file user_id={UserId}", userId);
+                break;
+            case FileUploadValidationError.FileTooLarge:
+                logger.LogWarning(
+                    "upload_rejected_file_too_large user_id={UserId} size_bytes={SizeBytes} plan_max_mb={PlanMaxFileSizeMb}",
+                    userId,
+                    sizeBytes,
+                    planMaxFileSizeMb);
+                break;
+            case FileUploadValidationError.UnsupportedExtension:
+                logger.LogWarning("upload_rejected_unsupported_extension user_id={UserId}", userId);
+                break;
+            case FileUploadValidationError.UnsupportedMimeType:
+                logger.LogWarning("upload_rejected_invalid_mime_type user_id={UserId}", userId);
+                break;
+            case FileUploadValidationError.UnsupportedTargetFormat:
+                logger.LogWarning("upload_rejected_unsupported_target user_id={UserId}", userId);
+                break;
+        }
+    }
+
+    private static string ToUserFacingMessage(FileUploadValidationError error)
+    {
+        return error switch
+        {
+            FileUploadValidationError.BlockedExtension => "File type is not allowed",
+            FileUploadValidationError.EmptyFile => "File must not be empty",
+            FileUploadValidationError.FileTooLarge => "File exceeds current plan size limit",
+            FileUploadValidationError.UnsupportedExtension => "File extension is not supported",
+            FileUploadValidationError.UnsupportedMimeType => "File MIME type is not supported",
+            FileUploadValidationError.UnsupportedTargetFormat => "Target format is not supported",
+            _ => "File could not be validated"
+        };
+    }
+
+    private static string GetStorageContentType(string contentType)
+    {
+        return string.IsNullOrWhiteSpace(contentType)
+            ? FileUploadValidation.OfficialDocxMimeType
+            : contentType;
     }
 
     private bool TryGetCurrentUserId(out Guid userId)
@@ -443,4 +527,8 @@ public sealed class ConversionService(
             // Best-effort cleanup. The caller receives a controlled failure response.
         }
     }
+
+    private sealed record ConversionValidationResult(
+        string SafeFileName,
+        IReadOnlyList<string> Errors);
 }

@@ -8,14 +8,18 @@ import { ConversionDetailPage } from "../features/conversions/pages/ConversionDe
 import { ConversionsPage } from "../features/conversions/pages/ConversionsPage";
 import { NewConversionPage } from "../features/conversions/pages/NewConversionPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
+import { CopyrightPage } from "./CopyrightPage";
 import { LandingPage } from "./LandingPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { TermsPage } from "./TermsPage";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<LandingPage />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="copyright" element={<CopyrightPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route element={<ProtectedRoute />}>

@@ -1,4 +1,5 @@
 import type { ConversionStatus } from "../types/conversionTypes";
+import { useTranslation } from "react-i18next";
 
 const styles: Record<ConversionStatus, string> = {
   Pending: "bg-amber-50 text-amber-800 border-amber-200",
@@ -13,9 +14,11 @@ type ConversionStatusBadgeProps = {
 };
 
 export function ConversionStatusBadge({ status }: ConversionStatusBadgeProps) {
+  const { t } = useTranslation();
+
   return (
-    <span className={`inline-flex items-center rounded-md border px-2 py-1 text-xs font-semibold ${styles[status]}`}>
-      {status}
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${styles[status]}`}>
+      {t(`conversions.status.${status}`)}
     </span>
   );
 }

@@ -1,0 +1,441 @@
+{
+  "common": {
+    "appName": "Convertly",
+    "brandEyebrow": "Convertly",
+    "loading": "Carregando...",
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "logout": "Sair",
+    "startNow": "Começar agora",
+    "viewAll": "Ver tudo",
+    "view": "Ver",
+    "download": "Baixar",
+    "downloadPdf": "Baixar PDF",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "currentPlan": "Plano atual",
+    "createConversion": "Criar conversão",
+    "newConversion": "Nova conversão",
+    "backToDashboard": "Voltar ao dashboard",
+    "loadingData": "Carregando dados...",
+    "pageOfItems": "Página {{page}} de {{totalPages}} · {{totalItems}} itens",
+    "formatPair": "{{source}} para {{target}}"
+  },
+  "language": {
+    "label": "Selecionar idioma",
+    "ptBR": "PT-BR",
+    "en": "EN"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "conversions": "Conversões",
+    "billing": "Planos",
+    "account": "Conta",
+    "openDashboard": "Abrir dashboard"
+  },
+  "landing": {
+    "badge": "Conversão privada de DOCX para PDF",
+    "heroTitle": "Converta documentos com segurança, clareza e privacidade.",
+    "heroSubtitle": "O Convertly ajuda você a transformar arquivos em PDF com uma experiência simples, acessível e preparada para uso real de produto.",
+    "secondaryCta": "Ver como funciona",
+    "institutional": "Privacidade, acessibilidade e respeito fazem parte da experiência do Convertly.",
+    "heroBadges": {
+      "private": "Arquivos privados",
+      "retention": "Retenção por plano",
+      "languages": "PT-BR/EN"
+    },
+    "mockup": {
+      "workspace": "Workspace privado",
+      "title": "Conversão DOCX para PDF",
+      "status": "Em andamento",
+      "source": "documento.docx",
+      "sourceMeta": "Arquivo original validado",
+      "target": "documento.pdf",
+      "targetMeta": "Download protegido",
+      "progressLabel": "Status da conversão",
+      "progressValue": "Processando",
+      "metricPlan": "Plano",
+      "metricLimit": "Limite",
+      "metricRetention": "Retenção"
+    },
+    "benefitsEyebrow": "Por que usar",
+    "benefitsTitle": "Mais clareza em cada conversão",
+    "benefitsDescription": "O Convertly combina upload privado, limites visíveis e uma experiência acessível para transformar documentos sem complicar o fluxo.",
+    "stats": {
+      "formatTitle": "DOCX para PDF",
+      "formatText": "Fluxo de conversão focado no MVP.",
+      "storageTitle": "Storage privado",
+      "storageText": "Arquivos não são públicos nem indexados.",
+      "limitsTitle": "Limites do plano",
+      "limitsText": "Tamanho, uso e retenção ficam visíveis."
+    },
+    "benefits": {
+      "privateFiles": {
+        "label": "Arquivos privados",
+        "text": "Os arquivos ficam privados durante o período de retenção."
+      },
+      "retention": {
+        "label": "Retenção clara",
+        "text": "Cada plano mostra por quanto tempo os arquivos ficam disponíveis."
+      },
+      "accessibility": {
+        "label": "Experiência acessível",
+        "text": "Telas simples, textos legíveis e feedback visível."
+      },
+      "status": {
+        "label": "Status por conversão",
+        "text": "Cada conversão possui status e entrada no histórico."
+      },
+      "languages": {
+        "label": "PT/EN preparado",
+        "text": "Base pronta para suporte multilíngue."
+      },
+      "validation": {
+        "label": "Validação de upload",
+        "text": "O envio passa por validações de formato, tamanho e tipo de arquivo."
+      }
+    },
+    "steps": {
+      "eyebrow": "Como funciona",
+      "title": "Um fluxo simples, com responsabilidade e controle",
+      "description": "A experiência foi pensada para guiar a conversão sem esconder limites, retenção ou responsabilidade sobre o arquivo.",
+      "upload": {
+        "title": "Envie seu DOCX",
+        "text": "Escolha um arquivo DOCX do seu dispositivo. Os arquivos ficam vinculados à sua conta durante a retenção."
+      },
+      "responsibility": {
+        "title": "Confirme o uso",
+        "text": "Antes de converter, confirme que você tem direito de usar e transformar o conteúdo."
+      },
+      "status": {
+        "title": "Acompanhe o status",
+        "text": "O Convertly cria uma tarefa de conversão e mostra o progresso enquanto o PDF é preparado."
+      },
+      "download": {
+        "title": "Baixe com controle",
+        "text": "Quando o PDF estiver pronto, baixe pelo histórico antes da expiração definida pelo seu plano."
+      }
+    },
+    "trust": {
+      "eyebrow": "Confiança sem exagero",
+      "title": "Privacidade, acessibilidade e uso responsável no mesmo fluxo",
+      "description": "A V2.0 reforça pontos importantes para um produto SaaS real: arquivos privados, downloads protegidos por conta, retenção clara, suporte bilíngue e mensagens simples.",
+      "private": {
+        "title": "Arquivos privados",
+        "text": "Arquivos enviados não são tornados públicos pelo Convertly."
+      },
+      "downloads": {
+        "title": "Downloads protegidos",
+        "text": "O acesso ao PDF respeita autenticação e ownership."
+      },
+      "retention": {
+        "title": "Retenção por plano",
+        "text": "Cada plano informa por quanto tempo o arquivo fica disponível."
+      },
+      "languages": {
+        "title": "PT-BR e EN",
+        "text": "A interface pode alternar idioma sem mudar o fluxo."
+      },
+      "accessibility": {
+        "title": "Acessibilidade",
+        "text": "Labels, foco visível e feedback textual ajudam no uso diário."
+      },
+      "responsible": {
+        "title": "Uso responsável",
+        "text": "O upload comunica direitos de uso e conteúdo permitido."
+      },
+      "validation": {
+        "title": "Validação de upload",
+        "text": "Extensão, MIME type e limite do plano são verificados."
+      }
+    },
+    "plans": {
+      "eyebrow": "Planos",
+      "title": "Limites claros para cada conta",
+      "description": "Cada plano comunica conversões mensais, tamanho de arquivo e retenção para você saber o que esperar antes do envio.",
+      "conversions": "Conversões",
+      "maxFileSize": "Tamanho máximo",
+      "retention": "Retenção"
+    },
+    "privacy": {
+      "title": "Privado por design de produto",
+      "text": "O Convertly não torna arquivos enviados públicos, não os indexa e não compartilha arquivos entre contas. Downloads e retenção seguem os limites do plano selecionado."
+    },
+    "finalCta": {
+      "eyebrow": "Próximo arquivo",
+      "title": "Pronto para converter com mais clareza?",
+      "text": "Comece com um workspace privado e limites fáceis de entender."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "description": "Acesse seu workspace privado no Convertly e continue gerenciando suas conversões.",
+      "submit": "Entrar",
+      "newToConvertly": "Ainda não tem conta no Convertly?",
+      "createAccount": "Criar conta"
+    },
+    "register": {
+      "title": "Criar conta",
+      "description": "Crie uma conta no Convertly para converter documentos com limites claros e retenção privada.",
+      "submit": "Cadastrar",
+      "alreadyHaveAccount": "Já tem uma conta?",
+      "login": "Entrar"
+    },
+    "fields": {
+      "name": "Nome",
+      "email": "Email",
+      "password": "Senha"
+    },
+    "placeholders": {
+      "name": "Seu nome",
+      "email": "voce@email.com",
+      "password": "Senha forte"
+    },
+    "validation": {
+      "nameRequired": "Informe seu nome.",
+      "emailRequired": "Informe seu email.",
+      "emailInvalid": "Informe um email válido.",
+      "passwordRequired": "Informe sua senha.",
+      "passwordMin": "A senha deve ter pelo menos 8 caracteres."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Acompanhe limites do plano, retenção privada e conversões recentes em um só lugar.",
+    "loadingSubscription": "Carregando assinatura...",
+    "loadingRecent": "Carregando conversões recentes...",
+    "summary": {
+      "currentPlan": "Plano atual",
+      "remaining": "{{count}} conversões restantes neste mês.",
+      "used": "{{count}} usadas",
+      "total": "{{count}} no total",
+      "usedMetric": "Usadas",
+      "maxFileSize": "Tamanho máximo",
+      "retention": "Retenção"
+    },
+    "recent": {
+      "title": "Conversões recentes",
+      "description": "As tarefas mais recentes criadas no seu workspace."
+    }
+  },
+  "upload": {
+    "title": "Nova conversão",
+    "description": "Envie um arquivo DOCX de forma privada e o Convertly preparará uma conversão para PDF na sua conta.",
+    "beforeTitle": "Antes de enviar",
+    "beforeText": "Mantenha o arquivo no formato DOCX e dentro do limite do seu plano. O Convertly mantém as conversões vinculadas à sua conta durante a retenção.",
+    "acceptedFormatTitle": "Formato aceito",
+    "acceptedFormat": "Documento DOCX para PDF",
+    "loadingPlan": "Carregando limites do seu plano...",
+    "planNotice": "Seu plano {{planName}} aceita arquivos DOCX de até {{maxFileSizeMb}} MB. Os arquivos permanecem privados durante o período de retenção do seu plano.",
+    "chooseFile": "Escolha um arquivo DOCX",
+    "helper": "O Convertly aceita documentos Word e mantém cada conversão conectada à sua conta.",
+    "dragDropHelper": "Arraste um DOCX aqui ou selecione do dispositivo.",
+    "selectFromDevice": "Selecionar arquivo do dispositivo",
+    "ready": "Pronto para criar uma conversão",
+    "selectedSize": "{{size}} MB selecionados",
+    "contentResponsibility": {
+      "notice": "Ao enviar um arquivo, você confirma que possui o direito de usar, converter e baixar este conteúdo. O Convertly não torna seus arquivos públicos e os mantém privados durante o período de retenção do seu plano.",
+      "checkbox": "Confirmo que tenho direito de usar e converter este arquivo.",
+      "help": "Esta confirmação é necessária para iniciar a conversão.",
+      "disabledReason": "Marque a confirmação de responsabilidade para habilitar a conversão."
+    },
+    "errors": {
+      "chooseFile": "Escolha um arquivo DOCX antes de criar a conversão.",
+      "unsupported": "Somente arquivos .docx são suportados.",
+      "tooLarge": "Este arquivo é maior que o limite de {{maxFileSizeMb}} MB do seu plano."
+    }
+  },
+  "legal": {
+    "terms": {
+      "linkLabel": "Termos de uso",
+      "eyebrow": "Uso responsável",
+      "title": "Termos de uso",
+      "intro": "Estes termos explicam, em linguagem simples, como usar o Convertly de forma responsável. Eles não substituem uma política jurídica completa e poderão evoluir conforme o produto crescer.",
+      "relatedText": "Veja também a política de conteúdo e copyright:",
+      "sections": {
+        "whatConvertlyDoes": {
+          "title": "O que o Convertly faz",
+          "text": "O Convertly ajuda você a converter documentos DOCX em PDF dentro da sua conta, com limites de uso e retenção definidos pelo plano."
+        },
+        "userResponsibility": {
+          "title": "Responsabilidade sobre arquivos",
+          "text": "Você deve enviar apenas arquivos que possui direito de usar, converter e baixar. Não envie conteúdo de terceiros sem autorização."
+        },
+        "allowedUse": {
+          "title": "Uso permitido",
+          "text": "Use o Convertly para conversões legítimas de documentos. O serviço não deve ser usado para distribuir conteúdo ilegal, expor dados privados ou tentar burlar controles de acesso."
+        },
+        "privateFiles": {
+          "title": "Arquivos privados",
+          "text": "Os arquivos enviados não são tornados públicos pelo Convertly, não são compartilhados entre contas e ficam associados à pessoa autenticada."
+        },
+        "retention": {
+          "title": "Retenção conforme o plano",
+          "text": "Arquivos e downloads ficam disponíveis durante o período de retenção do plano. Depois disso, o download pode expirar."
+        },
+        "serviceLimits": {
+          "title": "Limitações do serviço",
+          "text": "O Convertly busca oferecer uma experiência estável, mas não promete disponibilidade absoluta, conversão perfeita para todos os documentos ou recuperação de arquivos expirados."
+        },
+        "futureContact": {
+          "title": "Contato e denúncias futuras",
+          "text": "Um fluxo dedicado para contato, denúncia e remoção de conteúdo poderá ser implementado em uma fase futura."
+        }
+      }
+    },
+    "copyright": {
+      "linkLabel": "Política de conteúdo e copyright",
+      "eyebrow": "Conteúdo e copyright",
+      "title": "Política de conteúdo e copyright",
+      "intro": "O Convertly respeita direitos autorais e espera que todas as pessoas usem o produto com o mesmo cuidado.",
+      "relatedText": "Leia também os termos de uso:",
+      "sections": {
+        "rights": {
+          "title": "Direito de uso",
+          "text": "Envie apenas arquivos que você criou, possui, recebeu autorização para usar ou pode converter de acordo com as regras aplicáveis."
+        },
+        "privateFiles": {
+          "title": "Arquivos não públicos",
+          "text": "O Convertly não publica os arquivos enviados e não oferece upload público nesta fase."
+        },
+        "noIndexing": {
+          "title": "Não indexação",
+          "text": "Arquivos enviados não são preparados para busca pública ou indexação por mecanismos externos."
+        },
+        "noSharing": {
+          "title": "Sem compartilhamento entre contas",
+          "text": "Arquivos de uma conta não são compartilhados com outras contas dentro do produto."
+        },
+        "protectedDownloads": {
+          "title": "Downloads protegidos",
+          "text": "Downloads exigem autenticação e respeitam o ownership da conversão, para que cada conta acesse apenas seus próprios arquivos."
+        },
+        "retention": {
+          "title": "Expiração e retenção",
+          "text": "Arquivos convertidos expiram conforme o período de retenção do plano. Registros de histórico podem permanecer para consulta."
+        },
+        "futureRemoval": {
+          "title": "Remoção futura",
+          "text": "Um fluxo formal de denúncia, revisão e remoção poderá ser criado depois. Nesta fase, o produto apenas comunica as regras de uso responsável."
+        }
+      }
+    }
+  },
+  "conversions": {
+    "title": "Conversões",
+    "description": "Consulte seu histórico de conversões DOCX para PDF.",
+    "statusFilter": "Status",
+    "allStatuses": "Todos os status",
+    "loading": "Carregando conversões...",
+    "emptyTitle": "Nenhuma conversão encontrada",
+    "emptyText": "Seu histórico de conversões aparecerá aqui após o primeiro upload.",
+    "table": {
+      "file": "Arquivo",
+      "status": "Status",
+      "created": "Criado em",
+      "actions": "Ações"
+    },
+    "detail": {
+      "title": "Detalhe da conversão",
+      "description": "Acompanhe o status da conversão e baixe o PDF quando estiver pronto.",
+      "loading": "Carregando conversão...",
+      "running": "A conversão está em andamento. Esta página é atualizada automaticamente.",
+      "failedFallback": "A conversão não foi concluída. Tente novamente com outro arquivo DOCX.",
+      "created": "Criada em",
+      "started": "Iniciada em",
+      "completed": "Concluída em",
+      "expires": "Expira em"
+    },
+    "status": {
+      "Pending": "Pendente",
+      "Processing": "Processando",
+      "Completed": "Concluída",
+      "Failed": "Falhou",
+      "Expired": "Expirada"
+    }
+  },
+  "billing": {
+    "title": "Planos",
+    "description": "Compare limites claros para conversões, tamanho de arquivo e retenção. A cobrança é simulada neste MVP de portfólio.",
+    "simulatedNotice": "Pagamentos são simulados neste MVP de portfólio. Mudanças de plano atualizam os limites da sua conta imediatamente, sem cobrança real.",
+    "currentUsage": "Uso atual",
+    "usage": "{{used}} usadas, {{remaining}} restantes",
+    "loadingUsage": "Carregando uso...",
+    "loadingPlans": "Carregando planos...",
+    "changeSuccess": "Seu plano foi alterado para {{planName}}.",
+    "simulatedPlan": "Plano simulado do MVP",
+    "conversionsMonth": "Conversões/mês",
+    "maxFileSize": "Tamanho máximo",
+    "fileRetention": "Retenção de arquivo",
+    "switchToFree": "Mudar para Free",
+    "changePlan": "Alterar plano"
+  },
+  "account": {
+    "title": "Conta",
+    "description": "Gerencie perfil, informações do plano e segurança da conta em um só lugar.",
+    "name": "Nome",
+    "email": "Email",
+    "unavailable": "Não disponível",
+    "profile": {
+      "title": "Resumo do perfil",
+      "description": "Informações básicas da conta autenticada no Convertly.",
+      "status": "Status",
+      "active": "Ativa"
+    },
+    "plan": {
+      "title": "Plano e uso",
+      "description": "Limites e uso atual do plano no seu workspace.",
+      "loading": "Carregando informações do plano...",
+      "error": "Não foi possível carregar as informações do plano agora."
+    },
+    "security": {
+      "title": "Segurança",
+      "description": "Altere sua senha usando a senha atual como confirmação.",
+      "currentPassword": "Senha atual",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar nova senha",
+      "submit": "Alterar senha"
+    },
+    "links": {
+      "title": "Links úteis",
+      "description": "Revise orientações de uso, conteúdo e copyright do Convertly."
+    },
+    "danger": {
+      "title": "Zona de perigo",
+      "description": "Excluir sua conta desativa o acesso e encerra sua sessão. Histórico de conversões e arquivos privados continuam sem acesso público conforme a estratégia de exclusão do MVP.",
+      "currentPassword": "Senha atual",
+      "confirmation": "Entendo que esta ação desativará minha conta e encerrará minha sessão.",
+      "submit": "Excluir conta"
+    },
+    "validation": {
+      "currentPasswordRequired": "Informe a senha atual.",
+      "newPasswordRequired": "Informe a nova senha.",
+      "newPasswordMin": "A nova senha deve ter pelo menos 8 caracteres.",
+      "newPasswordDifferent": "A nova senha deve ser diferente da senha atual.",
+      "confirmPasswordRequired": "Confirme a nova senha.",
+      "confirmPasswordMatch": "A confirmação deve ser igual à nova senha.",
+      "deleteConfirmationRequired": "Confirme que você entende o impacto da exclusão da conta."
+    },
+    "messages": {
+      "passwordChanged": "Senha alterada com sucesso.",
+      "currentPasswordInvalid": "A senha atual é inválida."
+    }
+  },
+  "errors": {
+    "activeSubscriptionMissing": "Não foi possível encontrar uma assinatura ativa para sua conta.",
+    "downloadExpired": "Este arquivo expirou de acordo com a retenção do seu plano.",
+    "downloadUnavailable": "O arquivo convertido ainda não está disponível para download.",
+    "fileEmpty": "O arquivo não pode estar vazio.",
+    "fileTooLarge": "Este arquivo excede o limite do seu plano.",
+    "fileTypeBlocked": "Este tipo de arquivo não é permitido.",
+    "genericFileAccess": "Não foi possível acessar este arquivo. Verifique se ele ainda está disponível.",
+    "invalidMimeType": "Tipo de arquivo não permitido. Envie um DOCX válido.",
+    "network": "Erro de rede. Confira se o backend está em execução.",
+    "monthlyLimit": "Limite mensal de conversões atingido.",
+    "requestFailed": "Não foi possível concluir a solicitação.",
+    "authFailed": "Não foi possível autenticar a solicitação.",
+    "targetUnsupported": "Formato de destino não suportado.",
+    "unsupportedExtension": "Formato não suportado. Envie um arquivo DOCX válido."
+  }
+}

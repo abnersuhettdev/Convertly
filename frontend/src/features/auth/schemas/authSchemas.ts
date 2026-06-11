@@ -1,15 +1,23 @@
 import { z } from "zod";
+import type { TFunction } from "i18next";
 
-export const loginSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Enter a valid email"),
-  password: z.string().min(1, "Password is required"),
-});
+export function getLoginSchema(t: TFunction) {
+  return z.object({
+    email: z.string().min(1, t("auth.validation.emailRequired")).email(t("auth.validation.emailInvalid")),
+    password: z.string().min(1, t("auth.validation.passwordRequired")),
+  });
+}
 
-export const registerSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Email is required").email("Enter a valid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
+export function getRegisterSchema(t: TFunction) {
+  return z.object({
+    name: z.string().min(1, t("auth.validation.nameRequired")),
+    email: z.string().min(1, t("auth.validation.emailRequired")).email(t("auth.validation.emailInvalid")),
+    password: z.string().min(8, t("auth.validation.passwordMin")),
+  });
+}
+
+export const loginSchema = getLoginSchema(((key: string) => key) as TFunction);
+export const registerSchema = getRegisterSchema(((key: string) => key) as TFunction);
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;

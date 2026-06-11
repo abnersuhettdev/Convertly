@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { TFunction } from 'i18next';
 import { api } from '../../../lib/api';
 import type { ApiResponse } from '../../../types/api';
 import type {
@@ -29,18 +30,18 @@ export async function getMe() {
   return unwrapResponse(response.data);
 }
 
-export function getAuthErrorMessage(error: unknown) {
+export function getAuthErrorMessage(error: unknown, t?: TFunction) {
   if (axios.isAxiosError<ApiResponse<unknown>>(error)) {
     const body = error.response?.data;
     const firstError = body?.errors?.[0];
-    return firstError ?? body?.message ?? 'Authentication request failed';
+    return firstError ?? body?.message ?? t?.('errors.authFailed') ?? 'Authentication request failed';
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return 'Authentication request failed';
+  return t?.('errors.authFailed') ?? 'Authentication request failed';
 }
 
 function unwrapResponse<T>(response: ApiResponse<T>) {

@@ -3,13 +3,16 @@ using Convertly.Application.Conversions;
 using Convertly.Application.Conversions.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Convertly.Api.Controllers;
 
 [ApiController]
 [Authorize]
 [Route("/conversions")]
-public sealed class ConversionsController(IConversionService conversionService) : ControllerBase
+public sealed class ConversionsController(
+    IConversionService conversionService,
+    ILogger<ConversionsController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<ApiResponse<ConversionListResponse>>> GetAll(
@@ -34,6 +37,7 @@ public sealed class ConversionsController(IConversionService conversionService) 
     }
 
     [HttpGet("{id:guid}/download")]
+    [EnableRateLimiting(RateLimitPolicies.ConversionDownload)]
     public async Task<IActionResult> Download(Guid id, CancellationToken cancellationToken)
     {
         var response = await conversionService.DownloadConversionAsync(id, cancellationToken);
@@ -53,12 +57,15 @@ public sealed class ConversionsController(IConversionService conversionService) 
 
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [EnableRateLimiting(RateLimitPolicies.ConversionCreate)]
     public async Task<ActionResult<ApiResponse<CreateConversionResponse>>> Create(
         [FromForm] CreateConversionFormRequest request,
         CancellationToken cancellationToken)
     {
         if (request.File is null)
         {
+            logger.LogWarning("upload_rejected_missing_file");
+
             var missingFileResponse = ApiResponse<CreateConversionResponse>.Fail(
                 "Validation failed",
                 "File is required");

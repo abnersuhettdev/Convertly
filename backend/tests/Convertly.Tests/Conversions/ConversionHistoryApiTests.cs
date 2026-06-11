@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Convertly.Application.Auth.Dtos;
 using Convertly.Application.Common;
+using Convertly.Application.Conversions;
 using Convertly.Application.Conversions.Dtos;
 using Convertly.Application.Files;
 using Convertly.Domain.Constants;
@@ -234,7 +235,9 @@ public sealed class ConversionHistoryApiTests
         return new ConvertlyApiFactory(services =>
         {
             services.RemoveAll<IFileStorageService>();
+            services.RemoveAll<IConversionJobQueue>();
             services.AddSingleton<IFileStorageService>(fakeStorage);
+            services.AddSingleton<IConversionJobQueue, NoOpConversionJobQueue>();
         });
     }
 
@@ -332,5 +335,12 @@ public sealed class ConversionHistoryApiTests
 
         await dbContext.SaveChangesAsync();
         return conversionId;
+    }
+}
+
+internal sealed class NoOpConversionJobQueue : IConversionJobQueue
+{
+    public void EnqueueConversionJob(Guid conversionJobId)
+    {
     }
 }

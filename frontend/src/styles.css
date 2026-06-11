@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color: #182033;
+  color: #0f172a;
   background: #f8fafc;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,6 +22,14 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+button,
+a,
+input,
+select {
+  outline-offset: 3px;
 }

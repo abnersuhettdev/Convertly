@@ -76,6 +76,16 @@ public sealed class ConversionsApiTests
     }
 
     [Fact]
+    public async Task CreateConversion_WithBlockedExtension_ReturnsError()
+    {
+        var response = await PostAuthorizedConversionAsync(fileName: "document.exe", contentType: "application/octet-stream");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<CreateConversionResponse>>();
+        Assert.Contains("File type is not allowed", body?.Errors ?? []);
+    }
+
+    [Fact]
     public async Task CreateConversion_WithInvalidMimeType_ReturnsError()
     {
         var response = await PostAuthorizedConversionAsync(contentType: "text/plain");
@@ -83,6 +93,26 @@ public sealed class ConversionsApiTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<ApiResponse<CreateConversionResponse>>();
         Assert.Contains("File MIME type is not supported", body?.Errors ?? []);
+    }
+
+    [Fact]
+    public async Task CreateConversion_WithGenericMimeType_AllowsDocxUpload()
+    {
+        var fakeStorage = new FakeFileStorageService();
+        var fakeQueue = new FakeConversionJobQueue();
+        using var factory = CreateFactory(fakeStorage, fakeQueue);
+        using var client = factory.CreateClient();
+        await RegisterAndAuthorizeAsync(client);
+
+        var response = await client.PostAsync(
+            "/api/conversions",
+            CreateMultipartContent(contentType: "application/octet-stream"));
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<ApiResponse<CreateConversionResponse>>();
+
+        Assert.True(body?.Success);
+        Assert.NotNull(body?.Data);
     }
 
     [Fact]

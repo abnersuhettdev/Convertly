@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { TFunction } from "i18next";
 import { api } from "../../../lib/api";
 import type { ApiResponse } from "../../../types/api";
 import type {
@@ -50,26 +51,52 @@ export async function downloadConversion(conversionId: string) {
   };
 }
 
-export function getApiErrorMessage(error: unknown) {
+export function getApiErrorMessage(error: unknown, t?: TFunction) {
   if (axios.isAxiosError<ApiResponse<unknown>>(error)) {
     if (!error.response) {
-      return "Network error. Check whether the backend is running.";
+      return t?.("errors.network") ?? "Network error. Check whether the backend is running.";
     }
 
     const firstError = error.response.data?.errors?.[0];
     if (error.response.status === 422) {
-      return firstError ?? "Monthly conversion limit reached.";
+      return mapApiErrorMessage(firstError, t) ?? t?.("errors.monthlyLimit") ?? "Monthly conversion limit reached.";
     }
 
-    return firstError ?? error.response.data?.message ?? "Request failed.";
+    return mapApiErrorMessage(firstError, t)
+      ?? mapApiErrorMessage(error.response.data?.message, t)
+      ?? t?.("errors.requestFailed")
+      ?? "Request failed.";
   }
 
   if (error instanceof Error) {
     return error.message;
   }
 
-  return "Request failed.";
+  return t?.("errors.requestFailed") ?? "Request failed.";
 }
+
+function mapApiErrorMessage(message: string | undefined, t?: TFunction) {
+  if (!message || !t) {
+    return message;
+  }
+
+  const translationKey = backendErrorMap[message];
+  return translationKey ? t(translationKey) : message;
+}
+
+const backendErrorMap: Record<string, string> = {
+  "Active subscription was not found": "errors.activeSubscriptionMissing",
+  "Converted file has expired": "errors.downloadExpired",
+  "Converted file is not available for download": "errors.downloadUnavailable",
+  "Could not access this file. Check whether it is still available.": "errors.genericFileAccess",
+  "File exceeds current plan size limit": "errors.fileTooLarge",
+  "File extension is not supported": "errors.unsupportedExtension",
+  "File MIME type is not supported": "errors.invalidMimeType",
+  "File must not be empty": "errors.fileEmpty",
+  "File type is not allowed": "errors.fileTypeBlocked",
+  "Monthly conversion limit reached.": "errors.monthlyLimit",
+  "Target format is not supported": "errors.targetUnsupported"
+};
 
 function unwrapResponse<T>(response: ApiResponse<T>) {
   if (!response.success || response.data === null) {
